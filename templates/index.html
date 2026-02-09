@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OSI Packet Flow Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            display: flex;
+            width: 1000px;
+        }
+
+        /* OSI Sidebar */
+        .osi {
+            width: 200px;
+            border-right: 2px solid #ccc;
+            padding: 10px;
+        }
+
+        .layer {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background: #eee;
+        }
+
+        .layer.active {
+            background: #ffcc80;
+            font-weight: bold;
+        }
+
+        /* Network */
+        .main {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .network {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .device {
+            border: 2px solid #333;
+            padding: 20px;
+            margin: 0 15px;
+            border-radius: 10px;
+            background: #f5f5f5;
+            width: 120px;
+        }
+
+        .device.active {
+            background: #90caf9;
+        }
+
+        select, button {
+            padding: 8px;
+            font-size: 14px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- OSI Sidebar -->
+    <div class="osi" id="osi">
+        <h3>OSI Model</h3>
+        <div class="layer" data-layer="7">7 – Application</div>
+        <div class="layer" data-layer="6">6 – Presentation</div>
+        <div class="layer" data-layer="5">5 – Session</div>
+        <div class="layer" data-layer="4">4 – Transport</div>
+        <div class="layer" data-layer="3">3 – Network</div>
+        <div class="layer" data-layer="2">2 – Data Link</div>
+        <div class="layer" data-layer="1">1 – Physical</div>
+    </div>
+
+    <!-- Main Area -->
+    <div class="main">
+        <h1>Packet Flow Simulator</h1>
+
+        <select id="packetType">
+            <option value="HTTP">HTTP</option>
+            <option value="ICMP">ICMP (Ping)</option>
+            <option value="ARP">ARP</option>
+        </select>
+
+        <button onclick="start()">Send Packet</button>
+
+        <div class="network" id="network"></div>
+    </div>
+</div>
+
+<script>
+let path = [];
+let index = 0;
+
+function fetchPath() {
+    const type = document.getElementById("packetType").value;
+    fetch(`/path?type=${type}`)
+        .then(res => res.json())
+        .then(data => {
+            path = data;
+            renderNetwork();
+        });
+}
+
+function renderNetwork() {
+    const net = document.getElementById("network");
+    net.innerHTML = "";
+    path.forEach((node, i) => {
+        const d = document.createElement("div");
+        d.className = "device";
+        d.id = "device-" + i;
+        d.innerText = node.device;
+        net.appendChild(d);
+    });
+}
+
+function start() {
+    index = 0;
+    clearAll();
+    fetchPath();
+    setTimeout(move, 500);
+}
+
+function move() {
+    clearAll();
+
+    if (index < path.length) {
+        document.getElementById("device-" + index)
+            .classList.add("active");
+
+        path[index].layers.forEach(layer => {
+            document.querySelector(`.layer[data-layer="${layer}"]`)
+                .classList.add("active");
+        });
+
+        index++;
+        setTimeout(move, 1400);
+    }
+}
+
+function clearAll() {
+    document.querySelectorAll(".device")
+        .forEach(d => d.classList.remove("active"));
+
+    document.querySelectorAll(".layer")
+        .forEach(l => l.classList.remove("active"));
+}
+</script>
+
+</body>
+</html>
