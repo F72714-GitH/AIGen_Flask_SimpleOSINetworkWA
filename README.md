@@ -9,7 +9,7 @@ An interactive Flask web application that visualizes how different packet types
 
 This project is intended as a technical demonstration and learning tool.
 
-## Why this project exists
+## Why this project was developed
 
 Modern software development increasingly involves AI-assisted workflows.
 This repository demonstrates how AI can be used to:
@@ -23,7 +23,7 @@ This repository demonstrates how AI can be used to:
 - Full OSI model sidebar with active-layer highlighting
 - Multiple packet types with realistic OSI-layer behavior
 - Device-level packet traversal visualization
-- Flask backend with clean separation of concerns
+- Flask backend
 
 ## Tech Stack
 
